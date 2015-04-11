@@ -1,14 +1,14 @@
 
-#define voltageFlipPin1 7
-#define voltageFlipPin2 5
+#define soilPin1 7
+#define soilPin2 5
 #define sensorPin 0
 
-int flipTimer = 1000;
+int timeBetweenReadings = 1000;
 
 void setup(){
   Serial.begin(9600);
-  pinMode(voltageFlipPin1, OUTPUT);
-  pinMode(voltageFlipPin2, OUTPUT);
+  pinMode(soilPin1, OUTPUT);
+  pinMode(soilPin2, OUTPUT);
   pinMode(sensorPin, INPUT);
        
 }
@@ -16,56 +16,54 @@ void setup(){
 
 void setSensorPolarity(boolean flip){
   if(flip){
-    digitalWrite(voltageFlipPin1, HIGH);
-    digitalWrite(voltageFlipPin2, LOW);
-  }else{
-    digitalWrite(voltageFlipPin1, LOW);
-    digitalWrite(voltageFlipPin2, HIGH);
+    digitalWrite(soilPin1, HIGH);
+    digitalWrite(soilPin2, LOW);
+  }
+  else{
+    digitalWrite(soilPin1, LOW);
+    digitalWrite(soilPin2, HIGH);
   }
 }
 
-void readPlantMoisture() {
-  
-}
-
-void loop(){
-  debugMessage("Looping");
-  
-  //first read
-  setSensorPolarity(true);
-  delay(flipTimer);
-  int val1 = analogRead(sensorPin);
-  delay(flipTimer);  
-  
-  
-  //second read, opposite polarity
-  setSensorPolarity(false);
-  delay(flipTimer);
-  // invert the reading
-  int val2 = 1023 - analogRead(sensorPin);
-  
-  //
-  reportLevels(val1,val2);
-    
-}
-
-
-void reportLevels(int val1,int val2){
+int readPlantMoisture() {
   /**
   Read moisture (voltage change) across 2 pins
   Then read in reverse.
   Alternating polatity makes the metal in the pot last longer.
   */
-  debugMessage("Reading soil moisture");
-  int avg = (val1 + val2) / 2;
   
-  String msg = "avg: ";
-  msg += avg;
-  Serial.println(msg);
-
+  //first read
+  setSensorPolarity(true);
+  delay(timeBetweenReadings);
+  int val1 = analogRead(sensorPin);
+  delay(timeBetweenReadings);  
+  
+  
+  //second read, opposite polarity
+  setSensorPolarity(false);
+  delay(timeBetweenReadings);
+  // invert the reading
+  int val2 = 1023 - analogRead(sensorPin);
+  
+  //average the two values
+  debugMessage("Reading one = ",val1);
+  debugMessage("Reading two = ", val2);
+  
+  int avg = (val1 + val2) / 2;
+  debugMessage("Average reading = ", avg);
+  
+  return avg;
 }
 
-void debugMessage(String message) {
+void loop(){
+  debugMessage("Looping", 0);
+  int moisture_level = readPlantMoisture();
+
+    
+}
+  
+void debugMessage(String message, int value) {
+  message += value;
   Serial.println(message);
 }
 
