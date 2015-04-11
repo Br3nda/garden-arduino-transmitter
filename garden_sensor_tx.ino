@@ -13,6 +13,13 @@ const int receive_pin = 2;
 const int transmit_en_pin = 3;
 int timeBetweenReadings = 1000;
 
+
+void debugMessage(String message, int value) {
+  message += value;
+  Serial.println(message);
+}
+
+
 void setup(){
 
   //serial port comms, mostly for debugging
@@ -74,10 +81,7 @@ int readPlantMoisture() {
   return avg;
 }
 
-void debugMessage(String message, int value) {
-  message += value;
-  Serial.println(message);
-}
+
 
 
 
