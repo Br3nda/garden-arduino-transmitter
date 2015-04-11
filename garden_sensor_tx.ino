@@ -90,11 +90,12 @@ byte count = 1;
 void sendDataViaRF(int moisture_level) {
   debugMessage("Sending RF message, moisture_level = ", moisture_level);
   
-  char msg[4] = {'p', plant_number, ':', moisture_level};
+  int message_length = 2;
+  char msg[2] = {plant_number, moisture_level};
 
   msg[6] = count;
   digitalWrite(led_pin, HIGH); // Flash a light to show transmitting
-  vw_send((uint8_t *)msg, 7);
+  vw_send((uint8_t *)msg, message_length);
   vw_wait_tx(); // Wait until the whole message is gone
   digitalWrite(led_pin, LOW);
   delay(1000);
